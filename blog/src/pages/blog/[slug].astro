@@ -2,17 +2,21 @@
 import { getCollection } from "astro:content";
 import BlogLayout from "../../layouts/BlogLayout.astro";
 
-/** Tell Astro which blog slugs to pre-render */
+/** Pre-render all non-draft posts */
 export async function getStaticPaths() {
   const posts = await getCollection("posts", ({ data }) => !data.draft);
   return posts.map((post) => ({
     params: { slug: post.slug },
-    props: { post }, // pass the entry down
+    props: { post },
   }));
 }
 
 const { post } = Astro.props;
-const { Content, data } = await post.render();
+
+// Render the MDX entry and guard against missing front-matter
+const rendered = await post.render();
+const Content = rendered.Content;
+const data = rendered.data ?? {};
 
 const title = data.title ?? "Post";
 const desc = data.description ?? "";
@@ -22,9 +26,11 @@ const canonical = new URL(Astro.url, Astro.site);
   <article>
     <h1 style="margin-top:0">{title}</h1>
     <div class="muted" style="font-size:14px;margin-bottom:16px">
-      {new Date(data.date).toLocaleDateString()} · {data.readingTime ?? "5 min read"} · {data.tags?.join(", ")}
+      {new Date(data.date ?? Date.now()).toLocaleDateString()}
+      · {data.readingTime ?? "5 min read"}
+      · {(data.tags ?? []).join(", ")}
     </div>
     <Content />
-    <!-- Giscus placeholder -->
+    <!-- Giscus placeholder (wire later) -->
   </article>
 </BlogLayout>

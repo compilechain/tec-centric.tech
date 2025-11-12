@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Preview A — CSS Glow</title>
+<style>
+  :root{
+    --bg:#070B10;
+    --brand:#38BDF8; /* change later */
+    --grid:rgba(255,255,255,0.035);
+  }
+  html,body{height:100%;margin:0;background:var(--bg);color:#E8EEF5;font:16px/1.4 system-ui,Segoe UI,Roboto,Inter,Arial}
+  /* animated grid */
+  .grid{
+    position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background:
+      linear-gradient(to right, var(--grid) 1px, transparent 1px) 0 0/24px 24px,
+      linear-gradient(to bottom, var(--grid) 1px, transparent 1px) 0 0/24px 24px;
+    animation: pan 24s linear infinite;
+  }
+  @keyframes pan{from{background-position:0 0,0 0}to{background-position:240px 0,0 240px}}
+  /* pointer glow */
+  .glow{
+    position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(600px 400px at var(--mx,50%) var(--my,50%),
+        color-mix(in oklab, var(--brand) 25%, transparent), transparent 60%),
+      radial-gradient(1000px 700px at 110% 10%, rgba(99,102,241,0.10), transparent 40%);
+    transition: background-position .08s linear;
+  }
+  .card{
+    max-width:920px;margin:8vh auto;background:#0E141B;border:1px solid #1a2230;
+    border-radius:16px;padding:28px;box-shadow:0 10px 24px rgba(0,0,0,.18)
+  }
+  a{color:var(--brand);text-decoration:none} a:hover{text-decoration:underline}
+  @media (prefers-reduced-motion: reduce){
+    .grid{animation:none}
+  }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="glow" id="glow"></div>
+  <main class="card">
+    <h1 style="margin:0 0 8px">Preview A — CSS Glow</h1>
+    <p style="margin:0 0 12px">Move your mouse; notice the soft glow following the pointer.</p>
+    <p>This is a lightweight effect (CSS + ~20 lines JS). Perfect for the blog background.</p>
+    <p><a href="/preview/matrix.html">See Preview B — Matrix</a></p>
+  </main>
+<script>
+  // minimal pointer tracking
+  const g = document.getElementById('glow');
+  const set = (x,y)=>g && (g.style.setProperty('--mx', x+'px'), g.style.setProperty('--my', y+'px'));
+  addEventListener('pointermove', e => set(e.clientX, e.clientY), {passive:true});
+  // center on load
+  set(innerWidth/2, innerHeight/2);
+</script>
+</body>
+</html>

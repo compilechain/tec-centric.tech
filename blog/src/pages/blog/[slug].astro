@@ -1,0 +1,22 @@
+---
+import { getCollection } from "astro:content";
+import BlogLayout from "../../layouts/BlogLayout.astro";
+const { slug } = Astro.params;
+const posts = await getCollection("posts");
+const entry = posts.find(p => p.slug === slug);
+if (!entry) throw new Error("Post not found");
+const { Content, data } = await entry.render();
+const title = data.title ?? "Post";
+const desc = data.description ?? "";
+const canonical = new URL(Astro.url, Astro.site);
+---
+<BlogLayout {title} description={desc} {canonical}>
+  <article>
+    <h1 style="margin-top:0">{title}</h1>
+    <div class="muted" style="font-size:14px;margin-bottom:16px">
+      {new Date(data.date).toLocaleDateString()} · {data.readingTime ?? "5 min read"} · {data.tags?.join(", ")}
+    </div>
+    <Content />
+    <!-- Giscus placeholder to enable later -->
+  </article>
+</BlogLayout>

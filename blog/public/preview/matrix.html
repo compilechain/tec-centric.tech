@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Preview B — Matrix Rain</title>
+<style>
+  :root{ --bg:#070B10; --brand:#38BDF8; }
+  html,body{height:100%;margin:0;background:var(--bg);color:#E8EEF5;font:16px/1.4 system-ui,Segoe UI,Roboto,Inter,Arial}
+  canvas{position:fixed;inset:0;z-index:-2}
+  .card{
+    max-width:920px;margin:8vh auto;background:#0E141B;border:1px solid #1a2230;
+    border-radius:16px;padding:28px;box-shadow:0 10px 24px rgba(0,0,0,.18)
+  }
+  a{color:var(--brand);text-decoration:none} a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+  <canvas id="m"></canvas>
+  <main class="card">
+    <h1 style="margin:0 0 8px">Preview B — Matrix Rain</h1>
+    <p style="margin:0 0 12px">Classic “digital rain” rendered on a full-screen canvas. Color uses your brand.</p>
+    <p>Lightweight (~70 lines JS). We’ll add an On/Off toggle when integrating.</p>
+    <p><a href="/preview/css-glow.html">See Preview A — CSS Glow</a></p>
+  </main>
+<script>
+  const c = document.getElementById('m');
+  const ctx = c.getContext('2d', { alpha: false });
+  const glyphs = 'アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let w, h, fontSize, cols, drops;
+  function resize(){
+    w = c.width = innerWidth; h = c.height = innerHeight;
+    fontSize = Math.max(14, Math.floor(w/80));
+    cols = Math.floor(w / fontSize);
+    drops = Array(cols).fill(0);
+  }
+  function step(){
+    // fade
+    ctx.fillStyle = 'rgba(7,11,16,0.15)'; // matches --bg with alpha
+    ctx.fillRect(0,0,w,h);
+    // glyph color
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--brand') || '#38BDF8';
+    ctx.font = fontSize + 'px monospace';
+    for(let i=0;i<drops.length;i++){
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+      const char = glyphs[Math.floor(Math.random()*glyphs.length)];
+      ctx.fillText(char, x, y);
+      // reset with randomization for natural look
+      if (y > h && Math.random() > 0.975) drops[i] = 0;
+      else drops[i]++;
+    }
+    requestAnimationFrame(step);
+  }
+  addEventListener('resize', resize);
+  resize(); step();
+</script>
+</body>
+</html>

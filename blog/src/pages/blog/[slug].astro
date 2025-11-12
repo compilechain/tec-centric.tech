@@ -1,11 +1,19 @@
 ---
 import { getCollection } from "astro:content";
 import BlogLayout from "../../layouts/BlogLayout.astro";
-const { slug } = Astro.params;
-const posts = await getCollection("posts");
-const entry = posts.find(p => p.slug === slug);
-if (!entry) throw new Error("Post not found");
-const { Content, data } = await entry.render();
+
+/** Tell Astro which blog slugs to pre-render */
+export async function getStaticPaths() {
+  const posts = await getCollection("posts", ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post }, // pass the entry to the page
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, data } = await post.render();
+
 const title = data.title ?? "Post";
 const desc = data.description ?? "";
 const canonical = new URL(Astro.url, Astro.site);
@@ -17,6 +25,6 @@ const canonical = new URL(Astro.url, Astro.site);
       {new Date(data.date).toLocaleDateString()} · {data.readingTime ?? "5 min read"} · {data.tags?.join(", ")}
     </div>
     <Content />
-    <!-- Giscus placeholder to enable later -->
+    <!-- Giscus placeholder (will enable later) -->
   </article>
 </BlogLayout>

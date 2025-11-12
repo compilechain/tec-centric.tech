@@ -1,0 +1,12 @@
+:root{
+  --bg:#0b0f13; --card:#11161c; --text:#e8eef5; --muted:#a7b1bd; --brand:#38bdf8;
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#ffffff; --card:#f6f7f9; --text:#0b0f13; --muted:#3b4754; }
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe UI,Roboto,Inter,Arial}
+a{color:var(--brand);text-decoration:none}
+a:hover{text-decoration:underline}
+.container{max-width:960px;margin:0 auto;padding:24px}
+.card{background:var(--card);border:1px solid #1d2430;border-radius:16px;padding:24px}
+.muted{color:var(--muted)}

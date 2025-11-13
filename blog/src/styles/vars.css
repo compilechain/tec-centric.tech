@@ -1,12 +1,51 @@
+/* === Tec-Centric Technologies Blog theme (with effects toggle) === */
 :root{
-  --bg:#0b0f13; --card:#11161c; --text:#e8eef5; --muted:#a7b1bd; --brand:#38bdf8;
+  --bg:#070B10;
+  --bg-card:#0E141B;
+  --stroke:#1a2230;
+  --text:#E8EEF5;
+  --muted:#9FB0C2;
+
+  /* Brand — tweak later to match your logo */
+  --brand:#38BDF8;          /* primary accent (matrix glyphs / links) */
+  --brand-2:#3E3A83;        /* deep navy accent (optional) */
+
+  --grid-color: rgba(255,255,255,0.035);
 }
+
 @media (prefers-color-scheme: light){
-  :root{ --bg:#ffffff; --card:#f6f7f9; --text:#0b0f13; --muted:#3b4754; }
+  :root{
+    --bg:#ffffff; --bg-card:#F6F7F9; --stroke:#e6e9ee; --text:#0B0F13; --muted:#3B4754;
+    --grid-color: rgba(0,0,0,0.04);
+  }
 }
-html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe UI,Roboto,Inter,Arial}
-a{color:var(--brand);text-decoration:none}
-a:hover{text-decoration:underline}
+
+html,body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.5 system-ui, Segoe UI, Roboto, Inter, Arial, sans-serif}
+a{color:var(--brand);text-decoration:none} a:hover{text-decoration:underline}
 .container{max-width:960px;margin:0 auto;padding:24px}
-.card{background:var(--card);border:1px solid #1d2430;border-radius:16px;padding:24px}
+.card{background:var(--bg-card);border:1px solid var(--stroke);border-radius:16px;padding:24px;
+  box-shadow:0 10px 24px rgba(0,0,0,.18)}
 .muted{color:var(--muted)}
+.nav{display:flex;align-items:center;gap:16px;padding:10px 0;margin-bottom:16px}
+.nav a{color:var(--muted)} .nav a.active{color:var(--text);font-weight:600}
+
+/* --- Background effect containers (fixed, behind content) --- */
+#bg-matrix, #bg-glow, #bg-grid { position:fixed; inset:0; pointer-events:none; z-index:-2; display:none; }
+[data-effect="matrix"] #bg-matrix{display:block}
+[data-effect="glow"]   #bg-glow{display:block}
+#bg-grid{
+  background:
+    linear-gradient(to right, var(--grid-color) 1px, transparent 1px) 0 0/24px 24px,
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px) 0 0/24px 24px;
+  animation: pan 24s linear infinite; z-index:-3;
+}
+@keyframes pan{from{background-position:0 0,0 0}to{background-position:240px 0,0 240px}}
+@media (prefers-reduced-motion: reduce){ #bg-grid{animation:none} }
+
+/* Toggle UI */
+.effect-toggle{ display:flex; gap:8px; align-items:center; font-size:14px; color:var(--muted) }
+.effect-toggle select{
+  background:var(--bg-card); color:var(--text); border:1px solid var(--stroke);
+  border-radius:10px; padding:6px 10px;
+}

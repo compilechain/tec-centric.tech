@@ -1,5 +1,5 @@
 ---
-const { title = "Tec-Centric Blog", description = "Futuristic, sleek, modern EV & tech insights", canonical } = Astro.props;
+const { title = "Tec-Centric Technologies Blog", description = "Futuristic, upskilling, automotive, EV & technology insights", canonical } = Astro.props;
 const url = canonical ?? new URL(Astro.url, Astro.site);
 ---
 <!doctype html><html lang="en"><head>
@@ -9,17 +9,17 @@ const url = canonical ?? new URL(Astro.url, Astro.site);
   <meta property="og:title" content={title} /><meta property="og:description" content={description} />
   <meta property="og:type" content="article" /><meta property="og:url" content={url} />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" href="/assets/logo.svg" />
+  <link rel="icon" href="/assets/logo.png" />
   <link rel="stylesheet" href="/src/styles/vars.css" />
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"Tec-Centric Blog","url":"https://blog.tec-centric.tech"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"Tec-Centric Technologies Blog","url":"https://blog.tec-centric.tech"}</script>
 </head><body>
   <div class="container">
     <header style="display:flex;align-items:center;gap:12px;margin:12px 0 24px">
-      <img src="/assets/logo.svg" alt="logo" width="36" height="36" />
-      <div><div style="font-weight:600">Tec-Centric Blog</div>
+      <img src="/assets/logo.png" alt="logo" width="36" height="36" />
+      <div><div style="font-weight:600">Tec-Centric Technologies Blog</div>
       <div class="muted" style="font-size:14px">EV, data & workforce tech</div></div>
     </header>
     <main class="card"><slot /></main>
-    <footer class="muted" style="margin:24px 0 12px;font-size:14px">© {new Date().getFullYear()} Tec-Centric. All rights reserved.</footer>
+    <footer class="muted" style="margin:24px 0 12px;font-size:14px">© {new Date().getFullYear()} Tec-Centric Technologies. All rights reserved.</footer>
   </div>
 </body></html>

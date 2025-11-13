@@ -1,25 +1,80 @@
 ---
-const { title = "Tec-Centric Blog", description = "Futuristic, sleek, modern EV & tech insights", canonical } = Astro.props;
+const {
+  title = "Tec-Centric Blog",
+  description = "Futuristic, sleek, modern EV & tech insights",
+  canonical
+} = Astro.props;
 const url = canonical ?? new URL(Astro.url, Astro.site);
 ---
-<!doctype html><html lang="en"><head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>{title}</title><meta name="description" content={description} />
-  <link rel="canonical" href={url} />
-  <meta property="og:title" content={title} /><meta property="og:description" content={description} />
-  <meta property="og:type" content="article" /><meta property="og:url" content={url} />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" href="/assets/logo.svg" />
-  <link rel="stylesheet" href="/src/styles/vars.css" />
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"Tec-Centric Blog","url":"https://blog.tec-centric.tech"}</script>
-</head><body>
-  <div class="container">
-    <header style="display:flex;align-items:center;gap:12px;margin:12px 0 24px">
-      <img src="/assets/logo.svg" alt="logo" width="36" height="36" />
-      <div><div style="font-weight:600">Tec-Centric Blog</div>
-      <div class="muted" style="font-size:14px">EV, data & workforce tech</div></div>
-    </header>
-    <main class="card"><slot /></main>
-    <footer class="muted" style="margin:24px 0 12px;font-size:14px">© {new Date().getFullYear()} Tec-Centric. All rights reserved.</footer>
-  </div>
-</body></html>
+<!doctype html>
+<html lang="en" data-effect="off">
+  <head>
+    <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={url} />
+    <meta property="og:title" content={title} /><meta property="og:description" content={description} />
+    <meta property="og:type" content="website" /><meta property="og:url" content={url} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/assets/logo.svg" />
+    <link rel="stylesheet" href="/src/styles/vars.css" />
+    <script type="application/ld+json">
+      {JSON.stringify({"@context":"https://schema.org","@type":"Blog","name":"Tec-Centric Blog","url":"https://blog.tec-centric.tech"})}
+    </script>
+  </head>
+  <body>
+    <!-- background layers -->
+    <div id="bg-grid"></div>
+    <!-- effects (conditionally visible via [data-effect]) -->
+    {await import("../components/MatrixCanvas.astro").then(m => m.default({}))}
+    {await import("../components/CssGlow.astro").then(m => m.default({}))}
+
+    <div class="container">
+      <header class="nav">
+        <img src="/assets/logo.svg" alt="Tec-Centric" width="36" height="36" />
+        <a href="/" class="active">Home</a>
+        <a href="/rss.xml">RSS</a>
+        <a href="https://www.tec-centric.tech" rel="noopener">Website</a>
+        <div style="flex:1"></div>
+        <div class="effect-toggle">
+          Effects:
+          <select id="effectSel" aria-label="Background visual effect">
+            <option value="off">Off</option>
+            <option value="glow">Glow</option>
+            <option value="matrix">Matrix</option>
+          </select>
+        </div>
+      </header>
+
+      <main class="card">
+        <slot />
+      </main>
+
+      <footer class="muted" style="margin:24px 0 12px;font-size:14px">
+        © {new Date().getFullYear()} Tec-Centric. All rights reserved.
+      </footer>
+    </div>
+
+    <script is:inline>
+      (function(){
+        const root = document.documentElement;
+        const sel  = document.getElementById('effectSel');
+
+        // honor reduced motion
+        const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+        function safeSet(v){
+          if(reduced.matches) v = 'off';
+          root.setAttribute('data-effect', v);
+          sel.value = v;
+          localStorage.setItem('tcEffect', v);
+        }
+        // initial
+        const saved = localStorage.getItem('tcEffect') || 'off';
+        safeSet(saved);
+
+        reduced.addEventListener?.('change', () => safeSet(localStorage.getItem('tcEffect') || 'off'));
+        sel.addEventListener('change', () => safeSet(sel.value));
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+---
+/** CSS glow that follows pointer. Activated by [data-effect="glow"]. */
+---
+<div id="bg-glow"></div>
+
+<style>
+  #bg-glow{
+    background:
+      radial-gradient(600px 400px at var(--mx,50%) var(--my,50%),
+        color-mix(in oklab, var(--brand) 25%, transparent), transparent 60%),
+      radial-gradient(1000px 700px at 110% 10%, rgba(99,102,241,0.10), transparent 40%);
+    transition: background-position .08s linear;
+    z-index:-1;
+  }
+</style>
+
+<script is:inline>
+  (function(){
+    const el = document.getElementById('bg-glow');
+    if(!el) return;
+
+    const root = document.documentElement;
+
+    function shouldRun(){
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+      return root.getAttribute('data-effect') === 'glow';
+    }
+    function set(x,y){
+      el.style.setProperty('--mx', x+'px'); el.style.setProperty('--my', y+'px');
+    }
+    addEventListener('pointermove', e => { if(shouldRun()) set(e.clientX, e.clientY); }, { passive:true });
+    // center by default
+    set(innerWidth/2, innerHeight/2);
+
+    // if effect switches while pointer idle, recentre
+    const mo = new MutationObserver(() => { if(shouldRun()) set(innerWidth/2, innerHeight/2); });
+    mo.observe(root, { attributes:true, attributeFilter:['data-effect'] });
+  })();
+</script>

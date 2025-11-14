@@ -1,11 +1,11 @@
 ---
-import BlogLayout from "../layouts/BlogLayout.astro";
-import { getCollection } from "astro:content";
-
-// Load posts (skip drafts) and sort newest first
-const posts = (await getCollection("posts", ({ data }) => !data.draft))
-  .sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+import Layout from "../layouts/BlogLayout.astro";
+import Matrix from "../components/MatrixCanvas.astro";
+import Glow from "../components/CssGlow.astro";
+const title = "Tec-Centric Technologies Blog — EV & Tech";
+const description = "Futuristic, sleek insights on EV, Data, and Technologies.";
 ---
+
 <BlogLayout title="Tec-Centric Blog — Insights & Updates" description="Futuristic, sleek and modern EV & tech insights.">
   {posts.length === 0 ? (
     <div>

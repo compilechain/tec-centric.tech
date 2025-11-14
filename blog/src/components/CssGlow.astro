@@ -1,39 +1,45 @@
 ---
-/** CSS glow that follows pointer. Activated by [data-effect="glow"]. */
+/** Pointer-follow glow. Shows when <html data-effect="glow"> */
 ---
-<div id="bg-glow"></div>
+<div id="bg-glow" style="position:fixed;inset:0;z-index:-1;display:none;pointer-events:none"></div>
+<style>
+  /* subtle animated grid behind everything */
+  #bg-grid{
+    position:fixed;inset:0;z-index:-3;pointer-events:none;
+    background:
+      linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px) 0 0/24px 24px,
+      linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px) 0 0/24px 24px;
+    animation: tc-pan 24s linear infinite;
+  }
+  @keyframes tc-pan{from{background-position:0 0,0 0}to{background-position:240px 0,0 240px}}
+  @media (prefers-reduced-motion: reduce){ #bg-grid{animation:none} }
+</style>
+
+<script is:inline>
+(function(){
+  const root = document.documentElement;
+  const el = document.getElementById('bg-glow');
+  if(!el) return;
+  function shouldRun(){
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+    return root.getAttribute('data-effect')==='glow';
+  }
+  function show(on){ el.style.display = on ? 'block' : 'none'; }
+  function set(x,y){ el.style.setProperty('--mx',x+'px'); el.style.setProperty('--my',y+'px'); }
+  addEventListener('pointermove', e => { if(shouldRun()) set(e.clientX,e.clientY); }, {passive:true});
+  new MutationObserver(()=>show(shouldRun())).observe(root,{attributes:true,attributeFilter:['data-effect']});
+  set(innerWidth/2,innerHeight/2); show(shouldRun());
+})();
+</script>
 
 <style>
+  :root{ --brand:#38BDF8; }
   #bg-glow{
     background:
       radial-gradient(600px 400px at var(--mx,50%) var(--my,50%),
         color-mix(in oklab, var(--brand) 25%, transparent), transparent 60%),
       radial-gradient(1000px 700px at 110% 10%, rgba(99,102,241,0.10), transparent 40%);
     transition: background-position .08s linear;
-    z-index:-1;
   }
 </style>
-
-<script is:inline>
-  (function(){
-    const el = document.getElementById('bg-glow');
-    if(!el) return;
-
-    const root = document.documentElement;
-
-    function shouldRun(){
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
-      return root.getAttribute('data-effect') === 'glow';
-    }
-    function set(x,y){
-      el.style.setProperty('--mx', x+'px'); el.style.setProperty('--my', y+'px');
-    }
-    addEventListener('pointermove', e => { if(shouldRun()) set(e.clientX, e.clientY); }, { passive:true });
-    // center by default
-    set(innerWidth/2, innerHeight/2);
-
-    // if effect switches while pointer idle, recentre
-    const mo = new MutationObserver(() => { if(shouldRun()) set(innerWidth/2, innerHeight/2); });
-    mo.observe(root, { attributes:true, attributeFilter:['data-effect'] });
-  })();
-</script>
+<div id="bg-grid" aria-hidden="true"></div>

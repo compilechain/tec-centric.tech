@@ -1,9 +1,10 @@
 ---
-/** Pointer-follow glow. Shows when <html data-effect="glow"> */
+/** Pointer-follow glow. Runs when <html data-effect="glow"> */
 ---
 <div id="bg-glow" style="position:fixed;inset:0;z-index:-1;display:none;pointer-events:none"></div>
+
 <style>
-  /* subtle animated grid behind everything */
+  /* Subtle animated grid behind everything */
   #bg-grid{
     position:fixed;inset:0;z-index:-3;pointer-events:none;
     background:
@@ -13,26 +14,7 @@
   }
   @keyframes tc-pan{from{background-position:0 0,0 0}to{background-position:240px 0,0 240px}}
   @media (prefers-reduced-motion: reduce){ #bg-grid{animation:none} }
-</style>
 
-<script is:inline>
-(function(){
-  const root = document.documentElement;
-  const el = document.getElementById('bg-glow');
-  if(!el) return;
-  function shouldRun(){
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
-    return root.getAttribute('data-effect')==='glow';
-  }
-  function show(on){ el.style.display = on ? 'block' : 'none'; }
-  function set(x,y){ el.style.setProperty('--mx',x+'px'); el.style.setProperty('--my',y+'px'); }
-  addEventListener('pointermove', e => { if(shouldRun()) set(e.clientX,e.clientY); }, {passive:true});
-  new MutationObserver(()=>show(shouldRun())).observe(root,{attributes:true,attributeFilter:['data-effect']});
-  set(innerWidth/2,innerHeight/2); show(shouldRun());
-})();
-</script>
-
-<style>
   :root{ --brand:#38BDF8; }
   #bg-glow{
     background:
@@ -42,4 +24,26 @@
     transition: background-position .08s linear;
   }
 </style>
+
+<script is:inline>
+(function(){
+  const root = document.documentElement;
+  const el = document.getElementById('bg-glow');
+  if(!el) return;
+
+  function shouldRun(){
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+    return root.getAttribute('data-effect')==='glow';
+  }
+  function show(on){ el.style.display = on ? 'block' : 'none'; }
+  function set(x,y){ el.style.setProperty('--mx',x+'px'); el.style.setProperty('--my',y+'px'); }
+
+  addEventListener('pointermove', e => { if(shouldRun()) set(e.clientX,e.clientY); }, {passive:true});
+  new MutationObserver(()=>show(shouldRun())).observe(root,{attributes:true,attributeFilter:['data-effect']});
+
+  set(innerWidth/2,innerHeight/2);
+  show(shouldRun());
+})();
+</script>
+
 <div id="bg-grid" aria-hidden="true"></div>

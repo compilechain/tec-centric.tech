@@ -1,29 +1,65 @@
 ---
-import BlogLayout from "../layouts/BlogLayout.astro";
+import Layout from "../layouts/BlogLayout.astro";
+import Matrix from "../components/MatrixCanvas.astro";
+import Glow from "../components/CssGlow.astro";
 import { getCollection } from "astro:content";
 
-// Load posts (skip drafts) and sort newest first
-const posts = (await getCollection("posts", ({ data }) => !data.draft))
-  .sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+const title = "Tec-Centric Technologies Blog";
+const description = "Futuristic, sleek insights on EV, data, and Malaysian tech.";
+
+const posts = await getCollection('posts');
 ---
-<BlogLayout title="Tec-Centric Blog — Insights & Updates" description="Futuristic, sleek and modern EV & tech insights.">
-  {posts.length === 0 ? (
-    <div>
-      <h2 style="margin:0 0 8px">No posts yet</h2>
-      <p class="muted">Your content collection is set up. Add files in <code>src/content/posts</code>.</p>
-    </div>
-  ) : (
-    <ul style="list-style:none;padding:0;margin:0;display:grid;gap:16px">
-      {posts.map(({ data, slug }) => (
-        <li class="card">
-          <a href={`/blog/${slug}/`}><h2 style="margin:0 0 6px">{data?.title ?? "Untitled post"}</h2></a>
-          <div class="muted" style="font-size:14px">
-            {new Date(data?.date ?? Date.now()).toLocaleDateString()} · {data?.readingTime ?? "5 min read"}
-            {data?.tags?.length ? ` · ${data.tags.join(", ")}` : ""}
-          </div>
-          <p style="margin:8px 0 0">{data?.description ?? ""}</p>
-        </li>
-      ))}
-    </ul>
-  )}
-</BlogLayout>
+
+<Layout {title} {description}>
+
+  <!-- Background effects (home page only) -->
+  <script is:inline>
+    (function(){
+      const root = document.documentElement;
+      const saved = localStorage.getItem('tcEffect') || 'off';
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+      function apply(v){
+        if(reduced.matches) v='off';
+        root.setAttribute('data-effect', v);
+        localStorage.setItem('tcEffect', v);
+        const sel = document.getElementById('tcEffectSel');
+        if(sel) sel.value = v;
+      }
+
+      addEventListener('DOMContentLoaded',()=>apply(saved));
+      reduced.addEventListener?.('change',()=>apply(localStorage.getItem('tcEffect')||'off'));
+      addEventListener('change', e=>{
+        if(e.target && e.target.id==='tcEffectSel') apply(e.target.value);
+      });
+    })();
+  </script>
+
+  <Matrix />
+  <Glow />
+
+  <!-- Tiny toggle UI -->
+  <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-bottom:12px;color:var(--muted);font-size:14px">
+    Effects:
+    <select id="tcEffectSel" aria-label="Background effect">
+      <option value="off">Off</option>
+      <option value="glow">Glow</option>
+      <option value="matrix">Matrix</option>
+    </select>
+  </div>
+
+  <!-- Your existing homepage content: minimal post list -->
+  <section aria-label="Latest posts" style="display:grid;gap:1rem">
+    {posts.length === 0 ? (
+      <p>No posts yet. Create one in <code>blog/src/content/posts/</code>.</p>
+    ) : (
+      posts.map(p => (
+        <article>
+          <h3><a href={`/blog/${p.slug}/`}>{p.data.title ?? p.slug}</a></h3>
+          {p.data.description ? <p>{p.data.description}</p> : null}
+        </article>
+      ))
+    )}
+  </section>
+
+</Layout>

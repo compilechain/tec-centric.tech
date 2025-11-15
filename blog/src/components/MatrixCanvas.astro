@@ -1,5 +1,5 @@
 ---
-/** Matrix rain canvas. Shows when <html data-effect="matrix"> */
+/** Matrix rain canvas. Runs when <html data-effect="matrix"> */
 ---
 <canvas id="bg-matrix" style="position:fixed;inset:0;z-index:-2;display:none;pointer-events:none"></canvas>
 
@@ -12,8 +12,10 @@
   let w,h,fs,cols,drops,running=false;
   const glyphs='アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-  function col(){
-    const s=getComputedStyle(root); return (s.getPropertyValue('--brand')||'#38BDF8').trim();
+  function brand(){
+    const cs = getComputedStyle(root);
+    const v = (cs.getPropertyValue('--brand') || '#38BDF8').trim();
+    return v || '#38BDF8';
   }
   function resize(){
     w=c.width=innerWidth; h=c.height=innerHeight;
@@ -22,10 +24,12 @@
   function step(){
     if(!running) return;
     ctx.fillStyle='rgba(7,11,16,0.15)'; ctx.fillRect(0,0,w,h);
-    ctx.fillStyle=col(); ctx.font=fs+'px monospace';
+    ctx.fillStyle=brand(); ctx.font=fs+'px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
     for(let i=0;i<drops.length;i++){
-      const x=i*fs, y=drops[i]*fs; const ch=glyphs[(Math.random()*glyphs.length)|0];
-      ctx.fillText(ch,x,y); if(y>h&&Math.random()>0.975) drops[i]=0; else drops[i]++;
+      const x=i*fs, y=drops[i]*fs;
+      const ch=glyphs[(Math.random()*glyphs.length)|0];
+      ctx.fillText(ch,x,y);
+      if(y>h && Math.random()>0.975) drops[i]=0; else drops[i]++;
     }
     requestAnimationFrame(step);
   }
@@ -34,7 +38,7 @@
     return root.getAttribute('data-effect')==='matrix';
   }
   function sync(){
-    const on=shouldRun();
+    const on = shouldRun();
     c.style.display = on ? 'block' : 'none';
     if(on && !running){ running=true; step(); }
     if(!on){ running=false; }
